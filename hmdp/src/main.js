@@ -6,11 +6,27 @@ import * as element from '@element-plus/icons-vue';
 import elementplus from'element-plus';
 import router_1 from './components/router_1.vue';
 import router_2 from './components/router_2.vue';
+import shopList from './components/shopList.vue';
+import 'element-plus/dist/index.css'
+import blog_details from './components/blog_details.vue';
+import shopDetail from './components/shopDetail.vue';
 const routes =[{
     path:'/1',component:router_1,
 },
 {
+    path:'/',component:router_1,
+},
+{
     path:'/2',component:router_2,
+},
+{
+    path:'/shopList',component:shopList
+},
+{
+    path:'/blog_details',component:blog_details,
+},
+{
+    path:'/shop_details',component:shopDetail,
 }
 ];
 const router = createRouter({

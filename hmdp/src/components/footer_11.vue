@@ -52,6 +52,7 @@ const count = ref(0)
   padding-bottom: 1rem;
   z-index: 2000;
   background-color: white;
+  position: fixed;
 }
 
 .read-the-docs {
