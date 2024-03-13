@@ -1,7 +1,9 @@
 <script setup>
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import util from '../utils/utils';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+import service from '../utils/request';
+import { ElMessage } from 'element-plus';
 defineProps({
   msg: String,
 })
@@ -29,6 +31,27 @@ vouchers.value.push({
   "actualValue": 5000,
   "type": 0
 })
+onMounted(() => {
+  let id = useRoute().query.id;
+  querShopbyid(id);
+  queryVochersByid(id);
+})
+const querShopbyid = (shopId) => {
+  service.get("/shop/" + shopId)
+    .then(({ data }) => {
+      data.images = data.images.split(",")
+      data.score = data.score / 10;
+      Object.assign(shop,data)
+    })
+    .catch((err) => { ElMessage("获取店铺的情况出错了呢" + err) })
+}
+const queryVochersByid = (shopId) => {
+  service.get("/voucher/list/" + shopId)
+        .then(({data}) => {
+          vouchers.value = data;
+        })
+        .catch((err)=>{ElMessage('查询这个店铺的优惠券信息出错了呢'+err)})
+}
 </script>
 
 <template>
@@ -99,7 +122,8 @@ vouchers.value.push({
       </div>
       <div class="voucher-right">
         <div v-if="v.type" class="seckill-box">vouchers
-          <div class="voucher-btn" :class="{ 'disable-btn': isNotBegin(v) || v.stock < 1 }" @click="seckill(v)">限时抢购</div>
+          <div class="voucher-btn" :class="{ 'disable-btn': isNotBegin(v) || v.stock < 1 }" @click="seckill(v)">限时抢购
+          </div>
           <div class="seckill-stock">剩余 <span>{{ v.stock }}</span> 张</div>
           <div class="seckill-time">{{ formatTime(v) }}</div>
         </div>
@@ -192,327 +216,350 @@ vouchers.value.push({
 .rate-container {
   align-items: center;
 }
-.el-rate{
+
+.el-rate {
   height: 18px;
 }
 
 .header {
-    background-color: #fff;
+  background-color: #fff;
 }
 
 .top-bar {
-    height: 60px;
+  height: 60px;
 }
 
 .header {
-    width: 100%;
-    line-height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 2px solid #ff6633;
-    position: fixed;
-    top: 0;
-    z-index: 500;
+  width: 100%;
+  line-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #ff6633;
+  position: fixed;
+  top: 0;
+  z-index: 500;
 }
 
 .header-back-btn {
-    width: 10%;
-    color: #ff6633;
-    font-size: 24px;
-    font-weight: bold;
+  width: 10%;
+  color: #ff6633;
+  font-size: 24px;
+  font-weight: bold;
 }
 
 .header-title {
-    width: 80%;
-    text-align: center;
-    font-size: 18px;
-    font-family: Hiragino Sans GB, Arial, Helvetica, "\5B8B\4F53", sans-serif;
+  width: 80%;
+  text-align: center;
+  font-size: 18px;
+  font-family: Hiragino Sans GB, Arial, Helvetica, "\5B8B\4F53", sans-serif;
 }
 
 .header-share {
-    width: 10%;
-    text-align: center;
-    font-size: 18px;
-    color: #82848a;
-    font-weight: bold;
-    font-family: Hiragino Sans GB, Arial, Helvetica, "\5B8B\4F53", sans-serif;
+  width: 10%;
+  text-align: center;
+  font-size: 18px;
+  color: #82848a;
+  font-weight: bold;
+  font-family: Hiragino Sans GB, Arial, Helvetica, "\5B8B\4F53", sans-serif;
 }
 
 .shop-title {
-    font-size: 20px;
-    font-weight: bold;
-    margin: 5px 0;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 5px 0;
 }
 
 .shop-rate {
-    margin: 5px 0;
-    display: flex;
-    justify-content: space-between;
+  margin: 5px 0;
+  display: flex;
+  justify-content: space-between;
 }
 
 .shop-rate-info {
-    margin: 5px 0;
-    color: #82848a;
+  margin: 5px 0;
+  color: #82848a;
 }
 
 .shop-info-box {
-    padding: 0 10px;
+  padding: 0 10px;
 }
 
 .shop-rank {
-    margin: 5px 0;
-    display: flex;
-    width: 100%;
+  margin: 5px 0;
+  display: flex;
+  width: 100%;
 }
 
 .shop-rank span {
-    color: #B15E2C;
-    font-size: 11px;
-    background: linear-gradient(
-            -248deg, #FFEBCF 2%, #FFECDD 61%);
-    border-radius: 1px;
-    height: 20px;
-    line-height: 20px;
-    padding: 0 6px;
+  color: #B15E2C;
+  font-size: 11px;
+  background: linear-gradient(-248deg, #FFEBCF 2%, #FFECDD 61%);
+  border-radius: 1px;
+  height: 20px;
+  line-height: 20px;
+  padding: 0 6px;
 }
 
 .shop-rank div {
-    color: #5a5b5b;
-    font-size: 14px;
-    width: 45%;
-    text-align: end;
+  color: #5a5b5b;
+  font-size: 14px;
+  width: 45%;
+  text-align: end;
 }
 
 .shop-images {
-    display: flex;
-    overflow-x: scroll;
-    padding: 5px 0;
+  display: flex;
+  overflow-x: scroll;
+  padding: 5px 0;
 }
 
 .shop-images img {
-    height: 106px;
-    width: 145px;
-    margin-right: 3px;
-    display: inline-block;
-    border-radius: 7px;
-    border: 1px solid #e1e1e1;
+  height: 106px;
+  width: 145px;
+  margin-right: 3px;
+  display: inline-block;
+  border-radius: 7px;
+  border: 1px solid #e1e1e1;
 }
 
 .shop-address {
-    font-size: 14px;
-    color: #82848a;
-    height: 42px;
-    display: flex;
-    align-items: center;
-    padding: 5px 0;
+  font-size: 14px;
+  color: #82848a;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
 }
 
 .shop-divider {
-    height: 10px;
-    background-color: #f3f1f1;
+  height: 10px;
+  background-color: #f3f1f1;
 }
 
 .shop-open-time {
-    display: flex;
-    padding: 10px;
-    font-size: 14px;
+  display: flex;
+  padding: 10px;
+  font-size: 14px;
 }
 
 .shop-open-time div {
-    margin-right: 10px;
+  margin-right: 10px;
 }
 
 .line-right {
-    width: 40px;
-    flex-grow: 1;
-    color: #82848a;
-    font-size: 12px;
-    text-align: right;
+  width: 40px;
+  flex-grow: 1;
+  color: #82848a;
+  font-size: 12px;
+  text-align: right;
 }
 
 .shop-voucher {
-    padding: 10px;
+  padding: 10px;
 }
 
 .voucher-icon {
-    display: inline-block;
-    line-height: 16px;
-    background-color: #f5a966;
-    color: white;
-    padding: 0 4px 2px 4px;
+  display: inline-block;
+  line-height: 16px;
+  background-color: #f5a966;
+  color: white;
+  padding: 0 4px 2px 4px;
 }
 
 .voucher-box {
-    background-color: #fff1f1;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px;
-    margin: 10px 0;
+  background-color: #fff1f1;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  margin: 10px 0;
 }
 
 .voucher-circle {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 80px;
 }
 
-.voucher-b{
-    height: 10px;
-    width: 10px;
-    background-color: #fff;
-    border-radius: 50%;
+.voucher-b {
+  height: 10px;
+  width: 10px;
+  background-color: #fff;
+  border-radius: 50%;
 }
 
 .voucher-left {
-    flex-grow: 1;
-    margin-left: 15px;
+  flex-grow: 1;
+  margin-left: 15px;
 }
 
 .voucher-right {
-    margin-right: 15px;
+  margin-right: 15px;
 }
 
-.voucher-title, .voucher-subtitle, .voucher-price {
-    padding: 5px 0;
+.voucher-title,
+.voucher-subtitle,
+.voucher-price {
+  padding: 5px 0;
 }
 
 .voucher-title {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .voucher-subtitle {
-    color: #82848a;
+  color: #82848a;
 }
 
 .voucher-price {
-    color: #F63;
-    display: flex;
-    align-items: center;
+  color: #F63;
+  display: flex;
+  align-items: center;
 }
 
 .voucher-price div {
-    font-weight: bold;
-    font-size: 14px;
+  font-weight: bold;
+  font-size: 14px;
 }
 
 .voucher-price span {
-    margin-left: 10px;
-    font-size: 10px;
-    padding: 0 5px;
-    line-height: 10px;
-    background-color: #fce5e5;
+  margin-left: 10px;
+  font-size: 10px;
+  padding: 0 5px;
+  line-height: 10px;
+  background-color: #fce5e5;
 }
 
 .voucher-btn {
-    background-color: #ff6633;
-    color: white;
-    font-size: 14px;
-    line-height: 30px;
-    width: 65px;
-    text-align: center;
-    border-radius: 15px;
+  background-color: #ff6633;
+  color: white;
+  font-size: 14px;
+  line-height: 30px;
+  width: 65px;
+  text-align: center;
+  border-radius: 15px;
 }
-.seckill-box{
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    font-size: 12px;
-    padding: 15px 0 0 0;
+
+.seckill-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 12px;
+  padding: 15px 0 0 0;
 }
-.seckill-box div{
-    font-size: 12px;
+
+.seckill-box div {
+  font-size: 12px;
 }
-.disable-btn{
-    background-color: #adacab;
+
+.disable-btn {
+  background-color: #adacab;
 }
-.seckill-time{
-    color: #F63;
+
+.seckill-time {
+  color: #F63;
 }
+
 .seckill-stock {
-    color: #adacab;
+  color: #adacab;
 }
-.seckill-stock span{
-    background-color: #fce5e5;
-    color: rgb(240, 51, 51);
+
+.seckill-stock span {
+  background-color: #fce5e5;
+  color: rgb(240, 51, 51);
 }
+
 .copyright {
-    color: #d1d1d1;
-    margin-top: 20px;
-    text-shadow: 0 1px 1px #fff;
-    text-align: center;
+  color: #d1d1d1;
+  margin-top: 20px;
+  text-shadow: 0 1px 1px #fff;
+  text-align: center;
 }
+
 .shop-comments {
-    padding: 10px;
+  padding: 10px;
 }
+
 .comments-head {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-    font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: bold;
 }
+
 .comments-head span {
-    font-size: 12px;
-    font-weight: normal;
-    color: #82848a;
+  font-size: 12px;
+  font-weight: normal;
+  color: #82848a;
 }
+
 .comment-tags {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
+
 .comment-tags div {
-    width: 25%;
-    border: 1px solid #427fc4;
-    border-radius: 5px;
-    text-align: center;
-    color: #427fc4;
-    padding: 5px 10px;
-    margin-top: 7px;
+  width: 25%;
+  border: 1px solid #427fc4;
+  border-radius: 5px;
+  text-align: center;
+  color: #427fc4;
+  padding: 5px 10px;
+  margin-top: 7px;
 }
+
 .comment-list {
-    margin-top: 15px;
+  margin-top: 15px;
 }
+
 .comment-box {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
 }
+
 .comment-icon {
-    width: 55px;
+  width: 55px;
 }
-.comment-icon img{
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
+
+.comment-icon img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
 }
+
 .comment-info {
-    width: 80%;
-    flex-grow: 1;
+  width: 80%;
+  flex-grow: 1;
 }
+
 .comment-user {
-    font-size: 14px;
+  font-size: 14px;
 }
+
 .comment-user span {
-    font-size: 10px;
-    padding: 0 10px;
-    border-radius: 8px;
-    background-color: #f7b253;
-    color: white;
+  font-size: 10px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background-color: #f7b253;
+  color: white;
 }
+
 .comment-images {
-    display: flex;
-    width: 100%;
-    overflow-x: scroll;
-    padding: 10px 0;
+  display: flex;
+  width: 100%;
+  overflow-x: scroll;
+  padding: 10px 0;
 }
+
 .comment-images img {
-    height: 94px;
-    width: 92px;
-    border-radius: 5px;
-    margin-right: 5px;
+  height: 94px;
+  width: 92px;
+  border-radius: 5px;
+  margin-right: 5px;
 }
 </style>

@@ -1,7 +1,9 @@
 <script setup>
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
 import '../css/shop-list.css';
+import service from '../utils/request';
+import { ElMessage } from 'element-plus';
 defineProps({
   msg: String,
 })
@@ -10,108 +12,54 @@ const route = useRoute();
 const goBack = () => {
   router.go(-1);
 }
+const sortAndQuery = (sortBy) => {
+  this.params.sortBy = sortBy;
+  filteShops();
+}
+const filteShops = () => {
+  service.get("/shop/of/type", {
+    params: info.params
+  })
+    .then(({ data }) => {
+      if (!data) {
+        return
+      }
+      data.forEach(s => {
+        s.score = s.score / 10;
+        s.images = s.images.split(',')[0];
+      });
+      info.shops = info.shops.concat(data);
+    })
+    .catch(err => {
+      console.log(err);
+      this.$message.error(err)
+    })
+}
 const toDetail = (id) => {
   router.push({ path: '/shop_details', query: { id } })
 }
+onMounted(() => {
+  service.get("/shop-type/list")
+    .then(({ data }) => {
+      info.types = data;
+    })
+    .catch(err => {
+      console.log(err);
+      ElMessage("获取商店类型的时候出错了" + err)
+    });
+  filteShops();
+})
 const info = reactive({
   typeName: 'ceshi',
-  types: [
-    {
-      "id": 1,
-      "name": "美食",
-      "icon": "/types/ms.png",
-      "sort": 1
-    },
-    {
-      "id": 2,
-      "name": "KTV",
-      "icon": "/types/KTV.png",
-      "sort": 2
-    },
-    {
-      "id": 3,
-      "name": "丽人·美发",
-      "icon": "/types/lrmf.png",
-      "sort": 3
-    },
-    {
-      "id": 10,
-      "name": "美睫·美甲",
-      "icon": "/types/mjmj.png",
-      "sort": 4
-    },
-    {
-      "id": 5,
-      "name": "按摩·足疗",
-      "icon": "/types/amzl.png",
-      "sort": 5
-    },
-    {
-      "id": 6,
-      "name": "美容SPA",
-      "icon": "/types/spa.png",
-      "sort": 6
-    },
-    {
-      "id": 7,
-      "name": "亲子游乐",
-      "icon": "/types/qzyl.png",
-      "sort": 7
-    },
-    {
-      "id": 8,
-      "name": "酒吧",
-      "icon": "/types/jiuba.png",
-      "sort": 8
-    },
-    {
-      "id": 9,
-      "name": "轰趴馆",
-      "icon": "/types/hpg.png",
-      "sort": 9
-    },
-    {
-      "id": 4,
-      "name": "健身运动",
-      "icon": "/types/jsyd.png",
-      "sort": 10
-    }
-  ],
-  shops: [
-    {
-      "id": 1,
-      "name": "103茶餐厅",
-      "typeId": 1,
-      "images": "https://qcloud.dpfile.com/pc/jiclIsCKmOI2arxKN1Uf0Hx3PucIJH8q0QSz-Z8llzcN56-_QiKuOvyio1OOxsRtFoXqu0G3iT2T27qat3WhLVEuLYk00OmSS1IdNpm8K8sG4JN9RIm2mTKcbLtc2o2vfCF2ubeXzk49OsGrXt_KYDCngOyCwZK-s3fqawWswzk.jpg,https://qcloud.dpfile.com/pc/IOf6VX3qaBgFXFVgp75w-KKJmWZjFc8GXDU8g9bQC6YGCpAmG00QbfT4vCCBj7njuzFvxlbkWx5uwqY2qcjixFEuLYk00OmSS1IdNpm8K8sG4JN9RIm2mTKcbLtc2o2vmIU_8ZGOT1OjpJmLxG6urQ.jpg",
-      "area": "大关",
-      "address": "金华路锦昌文华苑29号",
-      "x": 120.149192,
-      "y": 30.316078,
-      "avgPrice": 80,
-      "sold": 4215,
-      "comments": 3035,
-      "score": 3.7,
-      "openHours": "10:00-22:00",
-      "createTime": "2021-12-22T18:10:39",
-      "updateTime": "2022-01-13T17:32:19"
-    },
-    {
-      "id": 2,
-      "name": "蔡馬洪涛烤肉·老北京铜锅涮羊肉",
-      "typeId": 1,
-      "images": "https://p0.meituan.net/bbia/c1870d570e73accbc9fee90b48faca41195272.jpg,http://p0.meituan.net/mogu/397e40c28fc87715b3d5435710a9f88d706914.jpg,https://qcloud.dpfile.com/pc/MZTdRDqCZdbPDUO0Hk6lZENRKzpKRF7kavrkEI99OxqBZTzPfIxa5E33gBfGouhFuzFvxlbkWx5uwqY2qcjixFEuLYk00OmSS1IdNpm8K8sG4JN9RIm2mTKcbLtc2o2vmIU_8ZGOT1OjpJmLxG6urQ.jpg",
-      "area": "拱宸桥/上塘",
-      "address": "上塘路1035号（中国工商银行旁）",
-      "x": 120.151505,
-      "y": 30.333422,
-      "avgPrice": 85,
-      "sold": 2160,
-      "comments": 1460,
-      "score": 4.6,
-      "openHours": "11:30-03:00",
-      "createTime": "2021-12-22T19:00:13",
-      "updateTime": "2022-01-11T16:12:26"
-    },]
+  types: [],
+  shops: [],
+  params: {
+    typeId: 0,
+    current: 1,
+    sortBy: "",
+    x: 120.149993, // 经度
+    y: 30.334229 // 纬度 写死的是不
+  }
 })
 info.typeName = route.query.name;
 const count = ref(0)
