@@ -1,8 +1,10 @@
 <script setup>
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router';
 import '../css/blog-edit.css'
-
+import service from '../utils/request';
+import { ElMessage } from 'element-plus';
+import checkLogin from '../utils/checkLogin';
 defineProps({
   msg: String,
 })
@@ -10,45 +12,26 @@ const router = useRouter();
 const goBack = () => {
   router.go(-1)
 }
+checkLogin();
+const shopName = ref('')
 const params = reactive({})
 const selectedShop = reactive({})
 const showDialog = ref(false);
 const inputRef = ref();
-const shops = ref([
-  {
-    "id": 1,
-    "name": "103茶餐厅",
-    "typeId": 1,
-    "images": "https://qcloud.dpfile.com/pc/jiclIsCKmOI2arxKN1Uf0Hx3PucIJH8q0QSz-Z8llzcN56-_QiKuOvyio1OOxsRtFoXqu0G3iT2T27qat3WhLVEuLYk00OmSS1IdNpm8K8sG4JN9RIm2mTKcbLtc2o2vfCF2ubeXzk49OsGrXt_KYDCngOyCwZK-s3fqawWswzk.jpg,https://qcloud.dpfile.com/pc/IOf6VX3qaBgFXFVgp75w-KKJmWZjFc8GXDU8g9bQC6YGCpAmG00QbfT4vCCBj7njuzFvxlbkWx5uwqY2qcjixFEuLYk00OmSS1IdNpm8K8sG4JN9RIm2mTKcbLtc2o2vmIU_8ZGOT1OjpJmLxG6urQ.jpg",
-    "area": "大关",
-    "address": "金华路锦昌文华苑29号",
-    "x": 120.149192,
-    "y": 30.316078,
-    "avgPrice": 80,
-    "sold": 4215,
-    "comments": 3035,
-    "score": 3.7,
-    "openHours": "10:00-22:00",
-    "createTime": "2021-12-22T18:10:39",
-    "updateTime": "2022-01-13T17:32:19"
-  },
-  {
-    "id": 2,
-    "name": "蔡馬洪涛烤肉·老北京铜锅涮羊肉",
-    "typeId": 1,
-    "images": "https://p0.meituan.net/bbia/c1870d570e73accbc9fee90b48faca41195272.jpg,http://p0.meituan.net/mogu/397e40c28fc87715b3d5435710a9f88d706914.jpg,https://qcloud.dpfile.com/pc/MZTdRDqCZdbPDUO0Hk6lZENRKzpKRF7kavrkEI99OxqBZTzPfIxa5E33gBfGouhFuzFvxlbkWx5uwqY2qcjixFEuLYk00OmSS1IdNpm8K8sG4JN9RIm2mTKcbLtc2o2vmIU_8ZGOT1OjpJmLxG6urQ.jpg",
-    "area": "拱宸桥/上塘",
-    "address": "上塘路1035号（中国工商银行旁）",
-    "x": 120.151505,
-    "y": 30.333422,
-    "avgPrice": 85,
-    "sold": 2160,
-    "comments": 1460,
-    "score": 4.6,
-    "openHours": "11:30-03:00",
-    "createTime": "2021-12-22T19:00:13",
-    "updateTime": "2022-01-11T16:12:26"
-  },]);
+const shops = ref([]);
+//这个组件setup的时候需要检查是否已经登入 毕竟是在编辑博客了 这是和用户强相关的
+
+
+const queryShops = () => {
+  service.get("/shop/of/name?name=" + shopName.value)
+    .then(({ data }) => shops.value = data)
+    .catch((err) => {
+      ElMessage("查询店铺出错了呢" + err)
+    })
+}
+onMounted(() => {
+  queryShops()
+})
 const openFileDialog = () => {
   inputRef.value.click();
 }
@@ -120,162 +103,189 @@ const selectShop = (s) => {
 </template>
 
 <style scoped>
-.header{
-    padding: 15px;
-    line-height: 20px;
-    display: flex;
-    justify-content: space-between;
-    text-align: center;
+.header {
+  padding: 15px;
+  line-height: 20px;
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
 }
-.header-cancel-btn{
-    font-size: 14px;
-    font-weight: bold;
+
+.header-cancel-btn {
+  font-size: 14px;
+  font-weight: bold;
 }
-.header-commit-btn{
-    color: white;
-    background-color: #F63;
-    padding: 0 12px;
-    border-radius: 15px;
+
+.header-commit-btn {
+  color: white;
+  background-color: #F63;
+  padding: 0 12px;
+  border-radius: 15px;
 }
+
 .header-title i {
-    font-size: 14px;
+  font-size: 14px;
 }
+
 .header-title {
-    text-align: center;
-    font-size: 18px;
-    font-family: Hiragino Sans GB,Arial,Helvetica,"\5B8B\4F53",sans-serif;
+  text-align: center;
+  font-size: 18px;
+  font-family: Hiragino Sans GB, Arial, Helvetica, "\5B8B\4F53", sans-serif;
 }
+
 .upload-box {
-    padding: 15px;
-    display: flex;
-    overflow-x: scroll;
+  padding: 15px;
+  display: flex;
+  overflow-x: scroll;
 }
+
 .upload-btn {
-    width: 70px;
-    height: 125px;
-    line-height: 40px;
-    text-align: center;
-    align-items: center;
-    border: 1px dashed #3a8ee6;
-    border-radius: 5px;
-    font-size: 30px;
-    color: #82848a;
-    margin-right: 10px;
+  width: 70px;
+  height: 125px;
+  line-height: 40px;
+  text-align: center;
+  align-items: center;
+  border: 1px dashed #3a8ee6;
+  border-radius: 5px;
+  font-size: 30px;
+  color: #82848a;
+  margin-right: 10px;
 }
+
 .upload-btn i {
-    margin-top: 35px;
+  margin-top: 35px;
 }
 
 .pic-list {
-    display: flex;
-    overflow-x: scroll;
-    height: 125px;
+  display: flex;
+  overflow-x: scroll;
+  height: 125px;
 }
-.pic-box{
-    width: 100px;
-    height: 120px;
-    border-radius: 5px;
-    margin-right: 2px;
-    border: 1px solid #c0ccda;
-    position: relative;
+
+.pic-box {
+  width: 100px;
+  height: 120px;
+  border-radius: 5px;
+  margin-right: 2px;
+  border: 1px solid #c0ccda;
+  position: relative;
 }
+
 .pic-box img {
-    width: 100px;
-    height: 120px;
-    border-radius: 5px;
+  width: 100px;
+  height: 120px;
+  border-radius: 5px;
 }
+
 .pic-box i {
-    position: absolute;
-    z-index: 99;
-    top: 2px;
-    right: 2px;
-    color: gray;
+  position: absolute;
+  z-index: 99;
+  top: 2px;
+  right: 2px;
+  color: gray;
 }
-.blog-title,.blog-content {
-    padding: 5px 15px;
+
+.blog-title,
+.blog-content {
+  padding: 5px 15px;
 }
+
 .blog-title input {
-    width: 100%;
-    line-height: 30px;
-    font-size: 14px;
-    border-top: 0;
-    border-left: 0;
-    border-right: 0;
-    border-bottom: 1px solid #e6e6e8;
+  width: 100%;
+  line-height: 30px;
+  font-size: 14px;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 1px solid #e6e6e8;
 }
+
 input::placeholder {
-    font-weight: bold;
-    color: #cccccc;
+  font-weight: bold;
+  color: #cccccc;
 }
+
 textarea::placeholder {
-    color: #cccccc;
+  color: #cccccc;
 }
-.blog-content textarea{
-    width: 100%;
-    height: 310px;
-    border: 0;
+
+.blog-content textarea {
+  width: 100%;
+  height: 310px;
+  border: 0;
 }
+
 .blog-shop {
-    color: #82848a;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
+  color: #82848a;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
 }
+
 .shop-left {
-    color: #111111;
-    font-size: 14px;
-    font-weight: bold;
+  color: #111111;
+  font-size: 14px;
+  font-weight: bold;
 }
+
 .divider {
-    background-color: #f4f4f5;
-    height: 10px;
+  background-color: #f4f4f5;
+  height: 10px;
 }
+
 .end-gray {
-    background-color: #f4f4f5;
-    height: 100%;
+  background-color: #f4f4f5;
+  height: 100%;
 }
+
 .mask {
-    height: 100%;
-    width: 100%;
-    position: fixed;
-    z-index: 299;
-    top: 0;
-    left: 0;
-    background: rgba(0,0,0,0.3);
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  z-index: 299;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.3);
 }
+
 .shop-dialog {
-    position: absolute;
-    z-index: 999;
-    bottom: 0;
-    height: 500px;
-    width: 100%;
-    background-color: #fff;
+  position: absolute;
+  z-index: 999;
+  bottom: 0;
+  height: 500px;
+  width: 100%;
+  background-color: #fff;
 }
+
 .search-bar {
-    display: flex;
-    padding: 15px;
-    line-height: 30px;
-    justify-content: space-between;
+  display: flex;
+  padding: 15px;
+  line-height: 30px;
+  justify-content: space-between;
 }
+
 .city-select {
-    font-weight: bold;
-    font-size: 14px;
-    margin-right: 10px;
+  font-weight: bold;
+  font-size: 14px;
+  margin-right: 10px;
 }
 
 .shop-list {
-    padding: 15px;
-    overflow-y: scroll;
-    height: 100%;
+  padding: 15px;
+  overflow-y: scroll;
+  height: 100%;
 }
+
 .shop-item {
-    border-bottom: 1px solid #eae8e8;
-    padding: 8px 0;
+  border-bottom: 1px solid #eae8e8;
+  padding: 8px 0;
 }
+
 .shop-name {
-    font-size: 14px;
-    font-weight: bold;
+  font-size: 14px;
+  font-weight: bold;
 }
+
 .read-the-docs {
   color: #000;
 }
