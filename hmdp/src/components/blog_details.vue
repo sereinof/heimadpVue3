@@ -57,6 +57,12 @@ const blog = reactive({
   "updateTime": "2022-03-10T14:26:34"
 })
 blog.images = blog.images.split(',')
+const toOtherInfo = ()=>{
+  //todo 根据当前博客 创建者跳转至用户信息 可能是当前用户也可能不是当前用户
+ router.push({
+  path:"/other_user_info",query:{}
+ })
+}
 const  score = ref(4.4)
 const count = ref(0)
 </script>

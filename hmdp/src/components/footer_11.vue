@@ -6,7 +6,7 @@ defineProps({
 });
 const router = useRouter();
 const toPage = (index) => {
-  router.replace({ path: `/${index}` });
+  router.push({ path: `/${index}` });
 }
 const count = ref(0)
 </script>

@@ -12,6 +12,8 @@ import blog_details from './components/blog_details.vue';
 import shopDetail from './components/shopDetail.vue';
 import blog_edit from './components/blog_edit.vue';
 import user_info from './components/user_info.vue';
+import other_user_info from './components/other_user_info.vue';
+import user_info_edit from './components/user_info_edit.vue';
 const routes = [{
     path: '/1', component: router_1,
 },
@@ -31,7 +33,9 @@ const routes = [{
     path: '/shop_details', component: shopDetail,
 },
 { path: '/blog_edit', component: blog_edit },
-{ path: '/user_info', component: user_info }
+{ path: '/user_info', component: user_info },
+{ path: '/other_user_info', component: other_user_info },
+{ path: '/user_info_edit', component: user_info_edit },
 ];
 const router = createRouter({
     history: createWebHashHistory(),
