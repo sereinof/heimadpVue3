@@ -1,13 +1,5 @@
 /*搜索框*/
-.search-bar{
-    background-color: #ff6633;
-    color: white;
-    display: flex;
-    justify-content: space-around;
-    height: 7%;
-    align-items: center;
-    padding: 0 8px;
-}
+
 .header-icon{
     /*width: 2%;*/
     width: 20px;

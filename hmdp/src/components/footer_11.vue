@@ -25,7 +25,7 @@ const count = ref(0)
         </el-icon></div>
       <div class="foot-text">地图</div>
     </div>
-    <div class="foot-box" @click="toPage(0)">
+    <div class="foot-box" @click="toPage('blog_edit')">
       <img class="add-btn" src="./imgs/add.png" alt="">
     </div>
     <div class="foot-box" :class="{ active: activeBtn === 3 }" @click="toPage(3)">
@@ -34,7 +34,7 @@ const count = ref(0)
         </el-icon></div>
       <div class="foot-text">消息</div>
     </div>
-    <div class="foot-box" :class="{ active: activeBtn === 4 }" @click="toPage(4)">
+    <div class="foot-box" :class="{ active: activeBtn === 4 }" @click="toPage('user_info')">
       <div class="foot-view"><el-icon>
           <User />
         </el-icon></div>

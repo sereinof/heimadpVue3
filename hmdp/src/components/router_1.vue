@@ -5,9 +5,15 @@ import '../css/index.css'
 defineProps({
   msg: String,
 })
+
 const router = useRouter();
 const toPage = (index) => {
   router.push({ path: `/${index}`,params:{}});
+}
+const toBlogDetail =(blog)=>{
+  router.push({
+    path:'/blog_details',params:blog
+  })
 }
 const toShopList = (id,name)=>{
   router.push({path:'/shopList',query:{id,name}});
@@ -181,5 +187,14 @@ const info = reactive({
 <style scoped>
 .read-the-docs {
   color: #888;
+}
+.search-bar{
+    background-color: #ff6633;
+    color: white;
+    display: flex;
+    justify-content: space-around;
+    height: 7%;
+    align-items: center;
+    padding: 0 8px;
 }
 </style>

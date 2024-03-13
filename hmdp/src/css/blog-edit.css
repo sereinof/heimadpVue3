@@ -140,25 +140,7 @@ textarea::placeholder {
     font-size: 14px;
     margin-right: 10px;
 }
-.search-input {
-    width: 50%;
-    flex-grow: 1;
-    background-color: #f1f1f1;
-    line-height: 30px;
-    align-items: center;
-    border-radius: 20px;
-    display: flex;
-    padding: 0 10px ;
-}
-.search-input input {
-    margin-left: 10px;
-    border: 0;
-    width: 100%;
-    background-color: #f1f1f1;
-}
-input:focus,textarea:focus {
-    outline: none;
-}
+
 .shop-list {
     padding: 15px;
     overflow-y: scroll;
