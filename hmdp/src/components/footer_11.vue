@@ -1,9 +1,16 @@
 <script setup>
-import { ref } from 'vue'
+import { provide, ref } from 'vue'
 import { useRouter } from 'vue-router';
 defineProps({
   msg: String,
 });
+const isShow = ref(true)
+provide('hideButtom',()=>{
+ isShow.value= false;
+})
+provide('showButtom',()=>{
+ isShow.value= true;
+})
 const router = useRouter();
 const toPage = (index) => {
   router.push({ path: `/${index}` });
@@ -12,7 +19,7 @@ const count = ref(0)
 </script>
 <template>
   <router-view></router-view>
-  <div class="foot">
+  <div v-show="isShow" class="foot">
     <div class="foot-box" :class="{ active: activeBtn === 1 }" @click="toPage(1)">
       <div class="foot-view"><el-icon>
           <House />

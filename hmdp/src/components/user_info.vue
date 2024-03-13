@@ -17,6 +17,11 @@ router.push({
 const user = reactive({})
 const info = reactive({})
 const activeName = ref("1");
+const logout = ()=>{
+router.push({
+  path:'/login',query:{}
+})
+}
 </script>
 
 <template>
@@ -112,7 +117,6 @@ const activeName = ref("1");
     display: flex;
     justify-content: space-between;
     padding: 15px 15px 5px 15px;
-    margin-top: 42px;
 }
 .basic-icon {
     width: 80px;

@@ -1,6 +1,5 @@
 <script setup>
-import { reactive, ref } from 'vue';
-import '../css/blog-detail.css'
+import { inject, reactive, ref } from 'vue';
 import utils from '../utils/utils';
 import { useRouter } from 'vue-router';
 defineProps({
@@ -28,9 +27,9 @@ const info = reactive({
   sensitivity: 60,
   resistance: 0.3
 })
- const shop =reactive({
+const shop = reactive({
 
- })
+})
 const formatTime = (b) => {
   return b.getFullYear() + "年" + (b.getMonth() + 1) + "月" + b.getDate() + "日 ";
 }
@@ -38,9 +37,12 @@ const formatMinutes = (m) => {
   if (m < 10) m = "0" + m
   return m;
 }
-const router  = useRouter();
+inject('hideButtom')();
+let fun = inject('showButtom');
+const router = useRouter();
 const goBack = () => {
   router.go(-1);
+  fun();
 }
 const blog = reactive({
   "id": 4,
@@ -57,29 +59,29 @@ const blog = reactive({
   "updateTime": "2022-03-10T14:26:34"
 })
 blog.images = blog.images.split(',')
-const toOtherInfo = ()=>{
+const toOtherInfo = () => {
   //todo 根据当前博客 创建者跳转至用户信息 可能是当前用户也可能不是当前用户
- router.push({
-  path:"/other_user_info",query:{}
- })
+  router.push({
+    path: "/other_user_info", query: {}
+  })
 }
-const  score = ref(4.4)
+const score = ref(4.4)
 const count = ref(0)
 </script>
 
 <template>
   <div class="header">
     <div class="header-back-btn" @click="goBack"><el-icon>
-          <ArrowLeftBold />
-        </el-icon></div>
+        <ArrowLeftBold />
+      </el-icon></div>
     <div class="header-title"></div>
     <div class="header-share">...</div>
   </div>
-  <div  class="cro_container" style="height: 85%;overflow-y: scroll; overflow-x: hidden">
+  <div class="cro_container" style="height: 85%;overflow-y: scroll; overflow-x: hidden">
 
-    <el-carousel height="518px"  indicator-position="none" :loop="false" >
-      <el-carousel-item  v-for="item in blog.images" :key="item">
-        <img  class="" :src="item" />
+    <el-carousel height="518px" indicator-position="none" :loop="false">
+      <el-carousel-item v-for="item in blog.images" :key="item">
+        <img class="" :src="item" />
       </el-carousel-item>
     </el-carousel>
     <div class="basic">
@@ -143,9 +145,9 @@ const count = ref(0)
           </div>
           <div class="comment-info">
             <div class="comment-user">叶小乙 <span>Lv5</span></div>
-            <div  class="rate-container" style="display: flex;">
+            <div class="rate-container" style="display: flex;">
               打分
-              <el-rate  v-model="score" disabled></el-rate>
+              <el-rate v-model="score" disabled></el-rate>
             </div>
             <div style="padding: 5px 0; font-size: 14px">
               某平台上买的券，价格可以当工作餐吃，虽然价格便宜，但是这家店一点都没有...
@@ -193,7 +195,9 @@ const count = ref(0)
     <div style="width: 40%">
     </div>
     <div class="foot-box">
-      <div class="foot-view"><i class="el-icon-chat-square"></i></div>
+      <div class="foot-view"><el-icon>
+          <ChatDotSquare />
+        </el-icon></div>
     </div>
   </div>
 </template>
@@ -202,17 +206,307 @@ const count = ref(0)
 .read-the-docs {
   color: #000;
 }
-.cro_container img{
+
+.cro_container img {
   width: 100%;
 }
-.el-carousel__container {
-    position: relative;
-    height: 518px;
+
+.cro_container {
+  margin-top: 45px;
 }
-.rate-container{
+
+.el-carousel__container {
+  position: relative;
+  height: 518px;
+}
+
+.rate-container {
   align-items: center;
 }
-.el-rate{
+
+.el-rate {
   height: 16px;
+}
+
+.header {
+  background-color: #fff;
+
+}
+
+.top-bar {
+  height: 60px;
+}
+
+.header {
+  width: 100%;
+  height: 6%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #ff6633;
+  position: fixed;
+  top: 0;
+  z-index: 500;
+}
+
+.shop-avg {
+  opacity: .4;
+}
+
+.header-back-btn {
+  width: 10%;
+  color: #ff6633;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.header-title {
+  width: 80%;
+  text-align: center;
+  font-size: 18px;
+  font-family: Hiragino Sans GB, Arial, Helvetica, "\5B8B\4F53", sans-serif;
+}
+
+.header-share {
+  width: 10%;
+  text-align: center;
+  font-size: 18px;
+  color: #82848a;
+  font-weight: bold;
+  font-family: Hiragino Sans GB, Arial, Helvetica, "\5B8B\4F53", sans-serif;
+}
+
+.blog-divider {
+  height: 10px;
+  background-color: #f3f1f1;
+}
+
+.blog-info-box {
+  position: relative;
+  overflow: hidden;
+  height: 85%;
+  width: 100%;
+}
+
+.blog-info-box.indicator {
+  position: absolute;
+  right: 3vw;
+  bottom: 3vw;
+  width: 10vw;
+  height: 10vw;
+  line-height: 10vw;
+  border-radius: 5vw;
+  text-align: center;
+  background-color: rgba(0, 0, 0, .5);
+  color: #fff;
+  font-size: 14px;
+}
+
+.swiper-item {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.basic {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 15px 5px 15px;
+}
+
+.basic-icon {
+  width: 40px;
+  height: 40px;
+  padding: 1px;
+  background-color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.07);
+}
+
+.basic-icon img {
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+}
+
+.shop-basic {
+  margin: auto;
+  width: 80%;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 15px 5px 15px;
+  box-shadow: 0 4px 4px 2px rgba(0, 0, 0, 0.1);
+}
+
+.shop-icon {
+  width: 50px;
+  height: 50px;
+}
+
+.shop-icon img {
+  width: 100%;
+  height: 100%;
+}
+
+.zan-box {
+  width: 90%;
+  margin: auto;
+  padding: 20px 0 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.zan-list {
+  width: 88%;
+  display: flex;
+}
+
+.user-icon-mini {
+  margin-left: -5px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  padding: 1px;
+  background-color: #fff;
+  box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.07);
+}
+
+.user-icon-mini img {
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+}
+
+.basic-info {
+  width: 60%;
+}
+
+.basic-info .name {
+  font-weight: bold;
+  font-size: 12px;
+  color: #446889;
+}
+
+.basic-info .time {
+  display: inline-block;
+  padding: 0 10px;
+  margin: 5px 0 10px;
+  border-radius: 2px;
+  opacity: .4;
+}
+
+.logout-btn {
+  width: 100%;
+  height: 25px;
+  line-height: 25px;
+  border-radius: 12px;
+  text-align: center;
+  border: #ff6633 1px solid;
+  color: #ff6633;
+  box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.04);
+}
+
+.blog-text {
+  width: 90%;
+  padding: 5px 20px;
+}
+
+.copyright {
+  color: #d1d1d1;
+  margin-top: 20px;
+  text-shadow: 0 1px 1px #fff;
+  text-align: center;
+}
+
+.blog-comments {
+  padding: 10px;
+}
+
+.comments-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.comments-head span {
+  font-size: 12px;
+  font-weight: normal;
+  color: #82848a;
+}
+
+.comment-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.comment-tags div {
+  width: 25%;
+  border: 1px solid #427fc4;
+  border-radius: 5px;
+  text-align: center;
+  color: #427fc4;
+  padding: 5px 10px;
+  margin-top: 7px;
+}
+
+.comment-list {
+  margin-top: 15px;
+}
+
+.comment-box {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.comment-icon {
+  width: 55px;
+}
+
+.comment-icon img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.comment-info {
+  width: 80%;
+  flex-grow: 1;
+}
+
+.comment-user {
+  font-size: 14px;
+}
+
+.comment-user span {
+  font-size: 10px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background-color: #f7b253;
+  color: white;
+}
+
+.comment-images {
+  display: flex;
+  width: 100%;
+  overflow-x: scroll;
+  padding: 10px 0;
+}
+
+.comment-images img {
+  height: 94px;
+  width: 92px;
+  border-radius: 5px;
+  margin-right: 5px;
+}
+
+.foot-view {
+  display: flex;
+  align-items: center;
 }
 </style>

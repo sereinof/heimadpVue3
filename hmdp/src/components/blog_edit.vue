@@ -280,10 +280,6 @@ textarea::placeholder {
   color: #000;
 }
 
-.upload-box {
-  margin-top: 50px;
-}
-
 .header {
   padding: unset;
   justify-content: space-around;

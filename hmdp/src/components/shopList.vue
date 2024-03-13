@@ -200,10 +200,6 @@ const count = ref(0)
   height: 25px;
 }
 
-.sort-bar {
-  margin-top: 53px;
-}
-
 .shop-avg {
   text-align: left;
   opacity: 1;
