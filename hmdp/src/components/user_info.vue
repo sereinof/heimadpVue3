@@ -33,25 +33,45 @@ const logout = () => {
     .catch((err) => { ElMessage('出了点小状况' + err) })
 }
 onMounted(() => {
-
+  queryUser();
 })
 const queryUser = () => {
   // 查询用户信息
-  axios.get("/user/me")
+  service.get("/user/me")
     .then(({ data }) => {
       // 保存用户
-      Object.assign(user , data);
+      Object.assign(user, data);
       // 查询用户详情
-      //queryUserInfo();
+      queryUserInfo();
       // 查询用户笔记
-      //queryBlogs();
+      queryBlogs();
     })
     .catch(err => {
-      ElMessage('当前未查询到登录信息 登录之后再来看个人哦！'+err)
+      ElMessage('当前未查询到登录信息 登录之后再来看个人哦！' + err)
       router.push({
         path: '/login', query: {}
       })
-      
+
+    })
+}
+const queryBlogs = () => {
+  service.get("/blog/of/me")
+    .then(({ data }) => { Object.assign(blogs, data) })
+    .catch((err)=>{ElMessage('查询用户下的博客失败了呢'+err)})
+}
+const queryUserInfo = () => {
+  axios.get("/user/info/" + user.id)
+    .then(({ data }) => {
+      if (!data) {
+        return
+      }
+      // 保存用户详情
+      Object.assign(info, data);
+      // 保存到本地
+      sessionStorage.setItem("userInfo", JSON.stringify(data))
+    })
+    .catch(err => {
+      ElMessage('查询用户详细信息失败了呢' + err)
     })
 }
 </script>

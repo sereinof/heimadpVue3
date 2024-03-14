@@ -12,7 +12,7 @@ const router = useRouter();
 const goBack = () => {
   router.go(-1)
 }
-checkLogin();
+checkLogin(router);
 const shopName = ref('')
 const params = reactive({})
 const selectedShop = reactive({})

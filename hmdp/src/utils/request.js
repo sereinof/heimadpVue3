@@ -32,9 +32,9 @@ service.interceptors.response.use(function (response) {
     if (error.response.status == 401) {
       ElMessage('报告状态码401')
       // 未登录，跳转
-      setTimeout(() => {
+      
        useRouter().push({path:'/login',query:{}})
-      }, 200);
+      
       return Promise.reject("请先登录");
     }
     return Promise.reject("服务器异常");

@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
+import { inject, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router';
 import '../css/index.css'
 import service from '../utils/request';
@@ -7,14 +7,14 @@ import { ElMessage } from 'element-plus';
 defineProps({
   msg: String,
 })
-
+inject('showButtom')();
 const router = useRouter();
 const toPage = (index) => {
   router.push({ path: `/${index}`, params: {} });
 }
 const toBlogDetail = (blog) => {
   router.push({
-    path: '/blog_details', params: blog
+    path: '/blog_details', query: { id: blog.id }
   })
 }
 const toShopList = (id, name) => {
@@ -36,7 +36,7 @@ onMounted(() => {
   }).catch(() => {
     ElMessage('获取店铺类型出错了')
   });
-  service.get("/blog/hot?current=" + info.current)  
+  service.get("/blog/hot?current=" + info.current)
     .then(({ data }) => {
       data.forEach(b => b.img = b.images.split(",")[0]);
       info.blogs = info.blogs.concat(data);

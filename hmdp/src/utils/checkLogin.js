@@ -1,8 +1,7 @@
 import { ElMessage } from "element-plus";
 import service from "./request";
-import { useRouter } from "vue-router";
 
-export default () => {
+export default (router) => {
     // 获取token
     let token = sessionStorage.getItem("token");
     if (!token) {
@@ -18,8 +17,8 @@ export default () => {
         .catch(err => {
 
             ElMessage(' 服务器判断未登录 未登录 滚去登录')
-            setTimeout(() => {
-                useRouter().push({ path: '/login', query: {} })
-            }, 200)
+           
+                router.push({ path: '/login', query: {} })
+           
         })
 }
