@@ -7,28 +7,7 @@ import { ElMessage } from 'element-plus';
 defineProps({
   msg: String,
 })
-const info = reactive({
-  blog: {},
-  shop: {},
-  likes: [],
-  user: {}, // 登录用户
-  followed: false, // 是否关注了
-  _width: 0,
-  duration: 300,
-  container: null,
-  items: [],
-  active: 0,
-  start: {
-    x: 0,
-    y: 0
-  },
-  move: {
-    x: 0,
-    y: 0
-  },
-  sensitivity: 60,
-  resistance: 0.3
-})
+const user = reactive({})
 const shop = reactive({
 
 })
@@ -91,18 +70,44 @@ const queryLoginUser = () => {
     .then(({ data }) => {
       // 保存用户
       Object.assign(user, data)
-      if (this.user.id !== this.blog.userId) {
+      if (user.id !== blog.userId) {
         isFollowed();
       }
     })
     .catch((err) => { ElMessage('应该是未登录状态呢' + err) })
 }
+const follow = () => {
+  service.put("/follow/" + blog.userId + "/" + !followed.value)
+    .then(() => {
+      ElMessage({ message: followed.value ? "已取消关注" : "已关注", type: 'success' })
+      followed.value = !followed.value
+    })
+    .catch((err) => {
+      ElMessage('关注失败了呢' + err)
+    })
+}
+const followed = ref(false);
 const isFollowed = () => {
-  service.get("/follow/or/not/" + this.blog.userId)
-    .then(({ data }) => followed = data)
+  service.get("/follow/or/not/" + blog.userId)
+    .then(({ data }) => { followed.value = data })
     .catch((err) => { ElMessage('查询是否关注信息失败' + err) });
 }
 const score = ref(4.4)
+const addLike = () => {
+  service.put("/blog/like/" + blog.id)
+    .then(({ data }) => {
+      service.get("/blog/" + blog.id)
+        .then(({ data }) => {
+          data.images = data.images.split(",")
+          Object.assign(blog, data);
+          queryLikeList(blog.id);
+        })
+        .catch(this.$message.error)
+    })
+    .catch(err => {
+      this.$message.error(err)
+    })
+}
 </script>
 
 <template>

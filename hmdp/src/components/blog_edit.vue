@@ -19,8 +19,20 @@ const selectedShop = reactive({})
 const showDialog = ref(false);
 const inputRef = ref();
 const shops = ref([]);
+const fileList = ref([]);
 //这个组件setup的时候需要检查是否已经登入 毕竟是在编辑博客了 这是和用户强相关的
-
+const fileSelected = () => {
+  let file = inputRef.value.files[0];
+  let formData = new FormData();
+  formData.append("file", file);
+  const config = {
+    headers: { "Content-Type": "multipart/form-data;boundary=" + new Date().getTime() }
+  };
+  service
+    .post("/upload/blog", formData, config)
+    .then(({ data }) => fileList.value.push('/imgs' + data))
+    .catch((err) => { ElMessage('文件上传失败了' + err) });
+}
 
 const queryShops = () => {
   service.get("/shop/of/name?name=" + shopName.value)
@@ -32,12 +44,24 @@ const queryShops = () => {
 onMounted(() => {
   queryShops()
 })
+const submitBlog = () => {
+  let { ...data } = params;
+  data.images = fileList.value.join(",");
+  data.shopId = selectedShop.id;
+  service.post("/blog", data)
+    .then(resp => router.push({
+      path: '/user_info', query: {}
+    }))
+    .catch((err) => {
+      ElMessage('博客发布失败' + err)
+    })
+}
 const openFileDialog = () => {
   inputRef.value.click();
 }
 const selectShop = (s) => {
-  selectedShop = s;
-  showDialog = false;
+  Object.assign(selectedShop, s);
+  showDialog.value = false;
 }
 </script>
 

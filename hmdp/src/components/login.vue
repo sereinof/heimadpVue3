@@ -53,7 +53,7 @@ const sendCode = () => {
       ElMessage('验证码生成失败了呢？' + err)
     });
   // 禁用按钮
-  disabled = true;
+  disabled.value = true;
   // 按钮倒计时
   let i = 60;
   this.codeBtnMsg = (i--) + '秒后可重发'

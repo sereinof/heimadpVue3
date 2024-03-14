@@ -17,10 +17,10 @@ const toBlogDetail = (blog) => {
     path: '/blog_details', query: { id: blog.id }
   })
 }
+
 const toShopList = (id, name) => {
   router.push({ path: '/shopList', query: { id, name } });
 }
-const count = ref(0);
 const info = reactive({
   isReachBottom: false,
   types: [
@@ -46,13 +46,13 @@ onMounted(() => {
     })
 })
 const queryBlogById = (b) => {
-  axios.get("/blog/" + b.id)
+  service.post("/blog/queryBlogById", { id: b.id })
     .then(({ data }) => {
       b.liked = data.liked;
       b.isLike = data.isLike;
     })
-    .catch(() => {
-      ElMessage('查询博客信息失败了')
+    .catch((error) => {
+      ElMessage('查询博客信息失败了' + error)
       b.liked++;
     })
 }
@@ -74,7 +74,7 @@ const addLike = (blog) => {
       <el-input placeholder="请输入商户名、地点">
       </el-input>
     </div>
-    <div class="header-icon" @click="toPage(4)"><el-icon size="20">
+    <div class="header-icon" @click="toPage('user_info')"><el-icon size="20">
         <User />
       </el-icon></div>
   </div>

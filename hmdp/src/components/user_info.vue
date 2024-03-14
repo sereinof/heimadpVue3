@@ -54,13 +54,22 @@ const queryUser = () => {
 
     })
 }
+const queryBlogsOfFollow = (clear)=>{
+  //TODO 根据用户去查询已关注博主的博客 未开发好 
+}
+const handleClick = (r) => {
+  if (r.name === '4') {
+    queryBlogsOfFollow(true);
+  }
+}
+const blogs = ref([]);
 const queryBlogs = () => {
   service.get("/blog/of/me")
-    .then(({ data }) => { Object.assign(blogs, data) })
-    .catch((err)=>{ElMessage('查询用户下的博客失败了呢'+err)})
+    .then(({ data }) => { blogs.value = data })
+    .catch((err) => { ElMessage('查询用户下的博客失败了呢' + err) })
 }
 const queryUserInfo = () => {
-  axios.get("/user/info/" + user.id)
+  service.get("/user/info/" + user.id)
     .then(({ data }) => {
       if (!data) {
         return
